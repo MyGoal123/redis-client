@@ -1,10 +1,14 @@
 package com.robert.redis.client.view;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -21,7 +25,7 @@ public class RedisClient extends JFrame{
 	private IRedisService redisService ;
 	
 	public RedisClient(){
-		
+		redisService = new RedisService();
 		this.setTitle(RC_TITLE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(RC_WIDTH, RC_HEIGHT);
@@ -50,9 +54,11 @@ public class RedisClient extends JFrame{
 		JPanel rcjp = new JPanel();
 		rcjp.setLayout(new BorderLayout());
 		RCJMenuBar();
+		rcjp.add(treeJpanel(), BorderLayout.WEST);
 		return rcjp;
 	}
 	
+	//菜单
 	private JMenuBar RCJMenuBar(){
 		JMenuBar rcjmb = new JMenuBar();
 		this.setJMenuBar(rcjmb);
@@ -82,6 +88,19 @@ public class RedisClient extends JFrame{
 		file.addSeparator();
 		file.add(jmi2);
 		return rcjmb;
+	}
+	
+	//左边框--以后单独抽出来
+	public JPanel treeJpanel(){
+		JPanel jp = new JPanel();
+		Set<String> keys = redisService.keys("*");
+		int row = keys.size();
+		jp.setLayout(new GridLayout(row,1,2,2));
+		for(String key : keys){
+			
+			jp.add(new JLabel(key));
+		}
+		return jp;
 	}
 	
 	
