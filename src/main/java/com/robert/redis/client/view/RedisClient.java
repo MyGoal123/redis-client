@@ -13,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.robert.redis.client.services.IRedisService;
 import com.robert.redis.client.services.RedisService;
@@ -54,7 +55,7 @@ public class RedisClient extends JFrame{
 		JPanel rcjp = new JPanel();
 		rcjp.setLayout(new BorderLayout());
 		RCJMenuBar();
-		rcjp.add(treeJpanel(), BorderLayout.WEST);
+		rcjp.add(treeJScrollPane(), BorderLayout.WEST);
 		return rcjp;
 	}
 	
@@ -90,6 +91,12 @@ public class RedisClient extends JFrame{
 		return rcjmb;
 	}
 	
+	public JScrollPane treeJScrollPane(){
+		JScrollPane jsp = new JScrollPane(treeJpanel());
+		jsp.setBounds(0, 0, 300, 400);
+		return jsp;
+	}
+	
 	//左边框--以后单独抽出来
 	public JPanel treeJpanel(){
 		JPanel jp = new JPanel();
@@ -97,8 +104,11 @@ public class RedisClient extends JFrame{
 		int row = keys.size();
 		jp.setLayout(new GridLayout(row,1,2,2));
 		for(String key : keys){
-			
+			if(redisService.typeKey(key).equals("hash")){
+				
+			}
 			jp.add(new JLabel(key));
+			
 		}
 		return jp;
 	}

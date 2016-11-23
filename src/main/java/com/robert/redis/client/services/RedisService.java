@@ -71,8 +71,17 @@ public class RedisService implements IRedisService{
 	}
 
 	public String typeKey(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		String result = null;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null){
+				result = resource.type(key);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public Set<String> keys(String key) {
