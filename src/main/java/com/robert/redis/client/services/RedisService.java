@@ -1,5 +1,7 @@
 package com.robert.redis.client.services;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.robert.redis.client.config.RedisPool;
@@ -9,21 +11,28 @@ import redis.clients.jedis.ShardedJedis;
 
 public class RedisService implements IRedisService{
 
+	private RedisPool redisPool;
 	
 	public RedisService(){
-		
+		redisPool = new RedisPool();
+	}
+	
+	public RedisService(String host){
+		redisPool = new RedisPool(host);
+	}
+	
+	public RedisService(String host, int port){
+		redisPool = new RedisPool(host, port);
 	}
 	
 	private Jedis getJResource(){
 		Jedis jResource = null;
-		RedisPool rp = new RedisPool();
-		jResource = rp.getJedis();
+		jResource = redisPool.getJedis();
 		return jResource;
 	}
 	private ShardedJedis getShardResource(){
 		ShardedJedis sResource = null;
-		RedisPool rp = new RedisPool();
-		sResource = rp.getShardedJedis();
+		sResource = redisPool.getShardedJedis();
 		return sResource;
 	}
 	
@@ -40,6 +49,8 @@ public class RedisService implements IRedisService{
 		}catch(Exception e){
 			result = false;
 			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
 		}
 		return result;
 	}
@@ -56,18 +67,43 @@ public class RedisService implements IRedisService{
 		}catch(Exception e){
 			result = null;
 			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
 		}
 		return result;
 	}
 
 	public Boolean existsKey(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		Boolean result = false;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null){
+				result = resource.exists(key);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
+		}
+		
+		return result;
 	}
 
 	public Long delKey(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		Long result = null;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null){
+				result = resource.del(key);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
+		}
+		return result;
 	}
 
 	public String typeKey(String key) {
@@ -80,6 +116,8 @@ public class RedisService implements IRedisService{
 			}
 		}catch(Exception e){
 			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
 		}
 		return result;
 	}
@@ -96,6 +134,92 @@ public class RedisService implements IRedisService{
 		}catch(Exception e){
 			result = null;
 			e.printStackTrace();
+		}finally{
+			redisPool.closeJedisPool();
+		}
+		return result;
+	}
+
+	public Map<String, String> getMap(String key) {
+		Map<String, String> map = null;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null && resource.exists(key)){
+				map = resource.hgetAll(key);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
+		}
+		return map;
+	}
+
+	public Boolean setMap(String key, Map<String, String> map) {
+		Boolean result = false;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null){
+				resource.hmset(key, map);
+				result = true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
+		}
+		return result;
+	}
+
+	public String getMapFieldValue(String key, String fieldKey) {
+		String result = null;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null && resource.hexists(key, fieldKey)){
+				result = resource.hget(key, fieldKey);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
+		}
+		return result;
+	}
+
+	public Map<String, String> getMapFieldValues(String key, String[] fieldKeys) {
+		Map<String, String> map = new HashMap<String, String>();
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null){
+				for(String fieldKey : fieldKeys){
+					map.put(fieldKey, resource.hget(key, fieldKey));
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
+		}
+		return map;
+	}
+
+	public Boolean setMapFieldValue(String key, String fieldKey, String fieldValue) {
+		Boolean result = false;
+		ShardedJedis resource = null;
+		try{
+			resource = getShardResource();
+			if(resource != null && resource.exists(key)){
+				resource.hset(key, fieldKey, fieldValue);
+				result = true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			redisPool.closeShardedJedisPool();
 		}
 		return result;
 	}

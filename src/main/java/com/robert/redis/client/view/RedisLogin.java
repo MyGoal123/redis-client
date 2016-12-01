@@ -143,7 +143,7 @@ class LoginButtonListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		el.dispose();
-		RedisClient rc = new RedisClient(h, pass, port);
+		RedisClient rc = new RedisClient(h, Integer.parseInt(port));
 		rc.setVisible(true);
 	}
 	

@@ -33,9 +33,18 @@ public class RedisClient extends JFrame{
 		this.setLocationRelativeTo(null);
 		this.setContentPane(RCJPannel());
 	}
-	public RedisClient(String host, String password, String port){
+	public RedisClient(String host){
 		
-		redisService = new RedisService();
+		redisService = new RedisService(host);
+		this.setTitle(RC_TITLE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setSize(RC_WIDTH, RC_HEIGHT);
+		this.setLocationRelativeTo(null);
+		this.setContentPane(RCJPannel());
+	}
+	public RedisClient(String host, int port){
+		
+		redisService = new RedisService(host, port);
 		this.setTitle(RC_TITLE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(RC_WIDTH, RC_HEIGHT);
@@ -46,7 +55,7 @@ public class RedisClient extends JFrame{
 	
 	public static void main(String[] args) {
 		
-		RedisClient rc = new RedisClient();
+		RedisClient rc = new RedisClient("10.0.2.54");
 		rc.setVisible(true);
 	}
 

@@ -21,8 +21,7 @@ public class RedisPool {
 	// 切片链接池
 	private ShardedJedisPool shardedJedisPool;
 	
-	//private String ip = "127.0.0.1";
-	private String ip = "10.0.2.54";
+	private String ip = "127.0.0.1";
 	private int port = 6379;
 
 	public RedisPool(){
@@ -77,6 +76,13 @@ public class RedisPool {
 		shards.add(new JedisShardInfo(ip, port, "master"));
 		// 构造池
 		shardedJedisPool = new ShardedJedisPool(config, shards);
+	}
+	
+	public void closeJedisPool(){
+		jedisPool.close();
+	}
+	public void closeShardedJedisPool(){
+		shardedJedisPool.close();
 	}
 
 	public Jedis getJedis() {
