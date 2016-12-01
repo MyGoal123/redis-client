@@ -1,14 +1,14 @@
 package com.robert.redis.client.view;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -62,9 +62,39 @@ public class RedisClient extends JFrame{
 	
 	private JPanel RCJPannel(){
 		JPanel rcjp = new JPanel();
-		rcjp.setLayout(new BorderLayout());
 		RCJMenuBar();
-		rcjp.add(treeJScrollPane(), BorderLayout.WEST);
+		GridBagLayout layout = new GridBagLayout();
+		GridBagConstraints sbc = new GridBagConstraints();
+		rcjp.setLayout(layout);
+		
+		JList treeJList = treeJList();
+		JScrollPane jsp = new JScrollPane(treeJList);
+		jsp.setBounds(0, 0, 300, 600);
+		JPanel leftBorderJPanel = new JPanel();
+		JPanel rightJPanel = new JPanel();
+		JPanel rightBorderJPanel = new JPanel();
+		rightJPanel.setBackground(Color.PINK);
+		rcjp.add(leftBorderJPanel);
+		rcjp.add(jsp);
+		rcjp.add(rightJPanel);
+		rcjp.add(rightBorderJPanel);
+		sbc.fill = GridBagConstraints.BOTH;
+		sbc.gridwidth = 1;
+		sbc.weightx = 0;
+		sbc.weighty = 1;
+		layout.setConstraints(leftBorderJPanel, sbc);
+		sbc.gridwidth = 1;
+		sbc.weightx = 0;
+		sbc.weighty = 1;
+		layout.setConstraints(jsp, sbc);
+		sbc.gridwidth = 5;
+		sbc.weightx = 1;
+		sbc.weighty = 1;
+		layout.setConstraints(rightJPanel, sbc);
+		sbc.gridwidth = 0;
+		sbc.weightx = 0;
+		sbc.weighty = 1;
+		layout.setConstraints(rightBorderJPanel, sbc);
 		return rcjp;
 	}
 	
@@ -100,26 +130,27 @@ public class RedisClient extends JFrame{
 		return rcjmb;
 	}
 	
-	public JScrollPane treeJScrollPane(){
-		JScrollPane jsp = new JScrollPane(treeJpanel());
-		jsp.setBounds(0, 0, 300, 400);
-		return jsp;
-	}
+	
 	
 	//左边框--以后单独抽出来
-	public JPanel treeJpanel(){
-		JPanel jp = new JPanel();
+	public JList treeJList(){
+		
 		Set<String> keys = redisService.keys("*");
 		int row = keys.size();
-		jp.setLayout(new GridLayout(row,1,2,2));
+		String[] array = new String[row];
+		int i=0;
 		for(String key : keys){
 			if(redisService.typeKey(key).equals("hash")){
 				
 			}
-			jp.add(new JLabel(key));
+			
+			array[i] = key;
+			i++;	
 			
 		}
-		return jp;
+		JList jlist = new JList(array);
+		
+		return jlist;
 	}
 	
 	
